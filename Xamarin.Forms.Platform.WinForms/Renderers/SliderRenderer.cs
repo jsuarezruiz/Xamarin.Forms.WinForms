@@ -1,23 +1,24 @@
 ﻿using System;
 using System.ComponentModel;
+using WForms = System.Windows.Forms;
 
 namespace Xamarin.Forms.Platform.WinForms
 {
-	public class SliderRenderer : ViewRenderer<Slider, System.Windows.Forms.TrackBar>
+	public class SliderRenderer : ViewRenderer<Slider, WForms.TrackBar>
 	{
+		public static readonly int Scale = 100;
+
 		/*-----------------------------------------------------------------*/
 		#region Event Handler
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Slider> e)
 		{
-			base.OnElementChanged(e);
-
 			if (e.NewElement != null)
 			{
 				if (Control == null)
 				{
-					SetNativeControl(new System.Windows.Forms.TrackBar());
-					Control.ValueChanged += OnValueChanged;
+					SetNativeControl(new WForms.TrackBar());
+
 				}
 
 				Control.TickFrequency = 0;
@@ -25,6 +26,22 @@ namespace Xamarin.Forms.Platform.WinForms
 				UpdateValue();
 				UpdateMinimum();
 				UpdateMaximum();
+			}
+
+			base.OnElementChanged(e);
+		}
+
+		protected override void OnNativeElementChanged(NativeElementChangedEventArgs<WForms.TrackBar> e)
+		{
+			base.OnNativeElementChanged(e);
+			if (e.OldControl != null)
+			{
+				e.OldControl.ValueChanged -= OnValueChanged;
+			}
+
+			if (e.NewControl != null)
+			{
+				e.NewControl.ValueChanged += OnValueChanged;
 			}
 		}
 
@@ -41,7 +58,7 @@ namespace Xamarin.Forms.Platform.WinForms
 
 		void OnValueChanged(object sender, EventArgs e)
 		{
-			((IElementController)Element).SetValueFromRenderer(Slider.ValueProperty, Control.Value);
+			((IElementController)Element).SetValueFromRenderer(Slider.ValueProperty, (double)Control.Value / Scale);
 		}
 
 
@@ -52,26 +69,17 @@ namespace Xamarin.Forms.Platform.WinForms
 
 		void UpdateValue()
 		{
-			if (Control != null && Element != null)
-			{
-				Control.Value = (int)Element.Value;
-			}
+			UpdatePropertyHelper((element, control) => control.Value = (int)(element.Value * Scale));
 		}
 
 		void UpdateMinimum()
 		{
-			if (Control != null && Element != null)
-			{
-				Control.Minimum = (int)Element.Minimum;
-			}
+			UpdatePropertyHelper((element, control) => control.Minimum = (int)(element.Minimum * Scale));
 		}
 
 		void UpdateMaximum()
 		{
-			if (Control != null && Element != null)
-			{
-				Control.Maximum = (int)Element.Maximum;
-			}
+			UpdatePropertyHelper((element, control) => control.Maximum = (int)(element.Maximum * Scale));
 		}
 
 		#endregion

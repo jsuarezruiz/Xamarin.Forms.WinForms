@@ -1,54 +1,51 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using WForms = System.Windows.Forms;
 
 namespace Xamarin.Forms.Platform.WinForms
 {
-	public class LabelRenderer : ViewRenderer<Label, System.Windows.Forms.Label>
+	public class LabelRenderer : ViewRenderer<Label, WForms.Label>
 	{
 		/*-----------------------------------------------------------------*/
 		#region Event Handler
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Label> e)
 		{
-			base.OnElementChanged(e);
-
 			if (e.NewElement != null)
 			{
 				if (Control == null)
 				{
-					SetNativeControl(new System.Windows.Forms.Label());
+					SetNativeControl(new WForms.Label());
 				}
 
-				UpdateText(Control);
-				UpdateTextColor(Control);
-				UpdateAlign(Control);
-				UpdateFont(Control);
+				UpdateText();
+				UpdateTextColor();
+				UpdateAlign();
+				UpdateFont();
 			}
+
+			base.OnElementChanged(e);
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == Label.TextProperty.PropertyName || e.PropertyName == Label.FormattedTextProperty.PropertyName)
 			{
-				UpdateText(Control);
+				UpdateText();
 			}
 			else if (e.PropertyName == Label.TextColorProperty.PropertyName)
 			{
-				UpdateTextColor(Control);
+				UpdateTextColor();
 			}
 			else if (e.PropertyName == Label.HorizontalTextAlignmentProperty.PropertyName ||
 				e.PropertyName == Label.VerticalTextAlignmentProperty.PropertyName)
 			{
-				UpdateAlign(Control);
+				UpdateAlign();
 			}
 			else if (e.PropertyName == Label.FontSizeProperty.PropertyName ||
 				e.PropertyName == Label.FontAttributesProperty.PropertyName)
 			{
-				UpdateFont(Control);
+				UpdateFont();
 			}
 
 			base.OnElementPropertyChanged(sender, e);
@@ -60,60 +57,30 @@ namespace Xamarin.Forms.Platform.WinForms
 		/*-----------------------------------------------------------------*/
 		#region Internals
 
-		void UpdateText(System.Windows.Forms.Label nativeElement)
+		void UpdateText()
 		{
-			if (nativeElement == null)
-				return;
-
-			Label label = Element;
-			if (label != null)
-			{
-				nativeElement.Text = label.Text;
-			}
+			UpdatePropertyHelper((element, control) => control.Text = element.Text);
 		}
 
-		void UpdateTextColor(System.Windows.Forms.Label nativeElement)
+		void UpdateTextColor()
 		{
-			if (nativeElement == null)
-				return;
-
-			Label label = Element;
-			if (label != null)
-			{
-				var color = label.TextColor;
-				nativeElement.ForeColor =
-					color == Color.Default ?
-						System.Drawing.SystemColors.ControlText :
-						color.ToWindowsColor();
-			}
+			UpdatePropertyHelper((element, control) => control.ForeColor = element.TextColor.ToWindowsColor());
 		}
 
-		void UpdateAlign(System.Windows.Forms.Label nativeElement)
+		void UpdateAlign()
 		{
-			if (nativeElement == null)
-				return;
-
-			Label label = Element;
-			if (label != null)
-			{
-				nativeElement.TextAlign = Platform.ToWindowsContentAlignment(
-					label.HorizontalTextAlignment, label.VerticalTextAlignment);
-			}
+			UpdatePropertyHelper((element, control) => control.TextAlign =
+				Platform.ToWindowsContentAlignment(
+					element.HorizontalTextAlignment, element.VerticalTextAlignment));
 		}
 
-		void UpdateFont(System.Windows.Forms.Label nativeElement)
+		void UpdateFont()
 		{
-			if (nativeElement == null)
-				return;
-
-			Label label = Element;
-			if (label != null)
-			{
-				nativeElement.Font = new System.Drawing.Font(
-					label.FontFamily,
-					Math.Max((float)label.FontSize, 1.0f),
-					label.FontAttributes.ToWindowsFontStyle());
-			}
+			UpdatePropertyHelper((element, control) =>
+				control.Font = new System.Drawing.Font(
+					element.FontFamily,
+					Math.Max((float)element.FontSize, 1.0f),
+					element.FontAttributes.ToWindowsFontStyle()));
 		}
 
 		#endregion

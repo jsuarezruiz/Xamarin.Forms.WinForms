@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using WForms = System.Windows.Forms;
 
 namespace Xamarin.Forms.Platform.WinForms
 {
-	public class PickerRenderer : ViewRenderer<Picker, System.Windows.Forms.ComboBox>
+	public class PickerRenderer : ViewRenderer<Picker, WForms.ComboBox>
 	{
 		/*-----------------------------------------------------------------*/
 		#region Event Handler
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Picker> e)
 		{
-			base.OnElementChanged(e);
-
 			if (e.OldElement != null)
 			{
 				e.OldElement.Items.RemoveCollectionChangedEvent(OnCollectionChanged);
@@ -21,16 +20,31 @@ namespace Xamarin.Forms.Platform.WinForms
 			{
 				if (Control == null)
 				{
-					SetNativeControl(new System.Windows.Forms.ComboBox());
-					Control.SelectedIndexChanged += OnSelectedIndexChanged;
+					SetNativeControl(new WForms.ComboBox());
 				}
 
 				e.NewElement.Items.AddCollectionChangedEvent(OnCollectionChanged);
-				Control.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+				Control.DropDownStyle = WForms.ComboBoxStyle.DropDownList;
 
 				UpdateItems();
 				UpdateSelectedIndex();
 				UpdateTextColor();
+			}
+
+			base.OnElementChanged(e);
+		}
+
+		protected override void OnNativeElementChanged(NativeElementChangedEventArgs<WForms.ComboBox> e)
+		{
+			base.OnNativeElementChanged(e);
+			if (e.OldControl != null)
+			{
+				e.OldControl.SelectedIndexChanged -= OnSelectedIndexChanged;
+			}
+
+			if (e.NewControl != null)
+			{
+				e.NewControl.SelectedIndexChanged += OnSelectedIndexChanged;
 			}
 		}
 

@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Xamarin.Forms.ControlGallery.WinForms
+namespace WinFormsTestApp
 {
-	public class App : Application
+	public class App : Xamarin.Forms.Application
 	{
 		public App()
 		{
-			MainPage = new Page1();
+			MainPage = new Page2();
 		}
 
 		protected override void OnStart()

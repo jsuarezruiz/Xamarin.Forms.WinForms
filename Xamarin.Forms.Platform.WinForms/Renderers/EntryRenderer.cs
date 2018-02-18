@@ -1,27 +1,23 @@
 ﻿using System;
 using System.ComponentModel;
+using WForms = System.Windows.Forms;
 
 namespace Xamarin.Forms.Platform.WinForms
 {
-	public class EntryRenderer : ViewRenderer<Entry, System.Windows.Forms.TextBox>
+	public class EntryRenderer : ViewRenderer<Entry, WForms.TextBox>
 	{
 		/*-----------------------------------------------------------------*/
 		#region Event Handler
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Entry> e)
 		{
-			base.OnElementChanged(e);
-
 			if (e.NewElement != null)
 			{
-				base.OnElementChanged(e);
-
 				if (e.NewElement != null)
 				{
 					if (Control == null)
 					{
-						SetNativeControl(new System.Windows.Forms.TextBox());
-						Control.TextChanged += OnTextChanged;
+						SetNativeControl(new WForms.TextBox());
 					}
 
 					Control.Multiline = false;
@@ -30,6 +26,22 @@ namespace Xamarin.Forms.Platform.WinForms
 					UpdateTextColor();
 					UpdateFont();
 				}
+			}
+
+			base.OnElementChanged(e);
+		}
+
+		protected override void OnNativeElementChanged(NativeElementChangedEventArgs<WForms.TextBox> e)
+		{
+			base.OnNativeElementChanged(e);
+			if (e.OldControl != null)
+			{
+				e.OldControl.TextChanged -= OnTextChanged;
+			}
+
+			if (e.NewControl != null)
+			{
+				e.NewControl.TextChanged += OnTextChanged;
 			}
 		}
 

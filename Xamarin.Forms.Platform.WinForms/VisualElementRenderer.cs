@@ -28,6 +28,8 @@ namespace Xamarin.Forms.Platform.WinForms
 						item?.Dispose();
 					}
 					_children.Clear();
+
+					SetNativeControl(null);
 				}
 
 				_disposedValue = true;
@@ -86,6 +88,10 @@ namespace Xamarin.Forms.Platform.WinForms
 			ElementChanged?.Invoke(this, args);
 		}
 
+		protected virtual void OnNativeElementChanged(NativeElementChangedEventArgs<TNativeElement> e)
+		{
+		}
+
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
@@ -119,41 +125,51 @@ namespace Xamarin.Forms.Platform.WinForms
 
 			UpdateTracker();
 
-			if (control == null)
-				return;
+			if (control != null)
+			{
+				//Control.HorizontalAlignment = HorizontalAlignment.Stretch;
+				//Control.VerticalAlignment = VerticalAlignment.Stretch;
+				Control.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+				Control.SetBounds(0, 0, 0, 0, BoundsSpecified.All);
 
-			//Control.HorizontalAlignment = HorizontalAlignment.Stretch;
-			//Control.VerticalAlignment = VerticalAlignment.Stretch;
-			Control.Anchor = AnchorStyles.Left | AnchorStyles.Top;
-			Control.SetBounds(0, 0, 0, 0, BoundsSpecified.All);
+				if (Element == null)
+					throw new InvalidOperationException(
+						"Cannot assign a native control without an Element; Renderer unbound and/or disposed. " +
+						"Please consult Xamarin.Forms renderers for reference implementation of OnElementChanged.");
 
-			if (Element == null)
-				throw new InvalidOperationException(
-					"Cannot assign a native control without an Element; Renderer unbound and/or disposed. " +
-					"Please consult Xamarin.Forms renderers for reference implementation of OnElementChanged.");
+				Element.IsNativeStateConsistent = false;
+				//control.Loaded += OnControlLoaded;
 
-			Element.IsNativeStateConsistent = false;
-			//control.Loaded += OnControlLoaded;
+				//	OnCotrolLoaded が呼ばれないので同等の処理を呼んでおく
+				//	これを設定しないと子要素のレイアウト処理が呼ばれない
+				Element.IsNativeStateConsistent = true;
 
-			//	OnCotrolLoaded が呼ばれないので同等の処理を呼んでおく
-			//	これを設定しないと子要素のレイアウト処理が呼ばれない
-			Element.IsNativeStateConsistent = true;
+				control.GotFocus += OnControlGotFocus;
+				control.LostFocus += OnControlLostFocus;
 
-			control.GotFocus += OnControlGotFocus;
-			control.LostFocus += OnControlLostFocus;
+				UpdateBackgroundColor();
 
-			UpdateBackgroundColor();
+				//if (Element != null && !string.IsNullOrEmpty(Element.AutomationId))
+				//	SetAutomationId(Element.AutomationId);
+			}
+			OnNativeElementChanged(new NativeElementChangedEventArgs<TNativeElement>(oldControl, control));
+		}
 
-			//if (Element != null && !string.IsNullOrEmpty(Element.AutomationId))
-			//	SetAutomationId(Element.AutomationId);
+		protected void UpdatePropertyHelper(Action<TElement, TNativeElement> func)
+		{
+			var element = Element;
+			var control = Control;
+			if (element != null && control != null)
+			{
+				func(element, control);
+			}
 		}
 
 		protected virtual void UpdateBackgroundColor()
 		{
-			Color backgroundColor = Element.BackgroundColor;
-			var control = Control as Control;
-			if (control != null)
+			UpdatePropertyHelper((element, control) =>
 			{
+				var backgroundColor = Element.BackgroundColor;
 				if (!backgroundColor.IsDefault)
 				{
 					control.BackColor = backgroundColor.ToWindowsColor();
@@ -162,7 +178,7 @@ namespace Xamarin.Forms.Platform.WinForms
 				{
 					control.BackColor = System.Drawing.SystemColors.Window;
 				}
-			}
+			});
 		}
 
 		protected virtual void UpdateNativeControl()
@@ -174,6 +190,15 @@ namespace Xamarin.Forms.Platform.WinForms
 			SetAutomationPropertiesAccessibilityView();
 			SetAutomationPropertiesLabeledBy();
 			*/
+		}
+
+		protected virtual Size Measure(TNativeElement control, Size constraint)
+		{
+			var size = control.GetPreferredSize(new System.Drawing.Size(
+				double.IsInfinity(constraint.Width) ? (int)constraint.Width : int.MaxValue,
+				double.IsInfinity(constraint.Height) ? (int)constraint.Height : int.MaxValue));
+
+			return new Size(size.Width, size.Height);
 		}
 
 		void OnControlGotFocus(object sender, EventArgs args)
@@ -215,11 +240,7 @@ namespace Xamarin.Forms.Platform.WinForms
 
 		void UpdateEnabled()
 		{
-			var control = Control as Control;
-			if (control != null)
-				control.Enabled = Element.IsEnabled;
-			/*else
-				IsHitTestVisible = Element.IsEnabled && !Element.InputTransparent;*/
+			UpdatePropertyHelper((element, control) => control.Enabled = Element.IsEnabled);
 		}
 
 		void UpdateTracker()
@@ -245,14 +266,10 @@ namespace Xamarin.Forms.Platform.WinForms
 
 		public SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
-			//	暫定
 			var control = Control;
 			if (control != null)
 			{
-				return new SizeRequest(
-					new Size(
-						Math.Min(control.Width, widthConstraint),
-						Math.Min(control.Height, heightConstraint)));
+				return new SizeRequest(Measure(control, new Size(widthConstraint, heightConstraint)));
 			}
 			return new SizeRequest(new Size(widthConstraint, heightConstraint));
 		}

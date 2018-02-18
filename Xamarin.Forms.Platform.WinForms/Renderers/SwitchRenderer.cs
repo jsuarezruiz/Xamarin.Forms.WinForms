@@ -1,26 +1,40 @@
 ﻿using System;
 using System.ComponentModel;
+using WForms = System.Windows.Forms;
 
 namespace Xamarin.Forms.Platform.WinForms
 {
-	public class SwitchRenderer : ViewRenderer<Switch, System.Windows.Forms.CheckBox>
+	public class SwitchRenderer : ViewRenderer<Switch, WForms.CheckBox>
 	{
 		/*-----------------------------------------------------------------*/
 		#region Event Handler
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Switch> e)
 		{
-			base.OnElementChanged(e);
-
 			if (e.NewElement != null)
 			{
 				if (Control == null)
 				{
-					SetNativeControl(new System.Windows.Forms.CheckBox());
-					Control.CheckedChanged += OnCheckedChanged;
+					SetNativeControl(new WForms.CheckBox());
 				}
 
 				UpdateToggle();
+			}
+
+			base.OnElementChanged(e);
+		}
+
+		protected override void OnNativeElementChanged(NativeElementChangedEventArgs<WForms.CheckBox> e)
+		{
+			base.OnNativeElementChanged(e);
+			if (e.OldControl != null)
+			{
+				e.OldControl.CheckedChanged -= OnCheckedChanged;
+			}
+
+			if (e.NewControl != null)
+			{
+				e.NewControl.CheckedChanged += OnCheckedChanged;
 			}
 		}
 

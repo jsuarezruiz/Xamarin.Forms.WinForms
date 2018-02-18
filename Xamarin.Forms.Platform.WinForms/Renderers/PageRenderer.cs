@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using WForms = System.Windows.Forms;
 
 namespace Xamarin.Forms.Platform.WinForms
 {
-	public class PageRenderer : VisualElementRenderer<Page, System.Windows.Forms.Panel>
+	public class PageRenderer : VisualElementRenderer<Page, WForms.Panel>
 	{
 		public PageRenderer()
 		{
@@ -14,14 +10,14 @@ namespace Xamarin.Forms.Platform.WinForms
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Page> e)
 		{
-			base.OnElementChanged(e);
 			if (e.NewElement != null)
 			{
 				if (Control == null)
 				{
-					SetNativeControl(new System.Windows.Forms.Panel());
+					SetNativeControl(new WForms.Panel());
 				}
 			}
+			base.OnElementChanged(e);
 		}
 	}
 }

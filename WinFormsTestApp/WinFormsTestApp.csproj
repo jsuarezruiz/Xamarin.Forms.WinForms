@@ -7,8 +7,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{63390A59-21A4-42AC-B3E0-18B65DDDD87A}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Xamarin.Forms.ControlGallery.WinForms</RootNamespace>
-    <AssemblyName>Xamarin.Forms.ControlGallery.WinForms</AssemblyName>
+    <RootNamespace>WinFormsTestApp</RootNamespace>
+    <AssemblyName>WinFormsTestApp</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -76,6 +76,9 @@
     <Compile Include="Page1.xaml.cs">
       <DependentUpon>Page1.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Page2.xaml.cs">
+      <DependentUpon>Page2.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -86,6 +89,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
@@ -114,6 +118,11 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Page1.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Page2.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>

@@ -1,22 +1,23 @@
-﻿
+﻿using WForms = System.Windows.Forms;
+
 namespace Xamarin.Forms.Platform.WinForms
 {
-	public class LayoutRenderer : ViewRenderer<Layout, System.Windows.Forms.Panel>
+	public class LayoutRenderer : ViewRenderer<Layout, WForms.Panel>
 	{
 		/*-----------------------------------------------------------------*/
 		#region Event Handler
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Layout> e)
 		{
-			base.OnElementChanged(e);
-
 			if (e.NewElement != null)
 			{
 				if (Control == null)
 				{
-					SetNativeControl(new System.Windows.Forms.Panel());
+					SetNativeControl(new WForms.Panel());
 				}
 			}
+
+			base.OnElementChanged(e);
 		}
 
 		#endregion

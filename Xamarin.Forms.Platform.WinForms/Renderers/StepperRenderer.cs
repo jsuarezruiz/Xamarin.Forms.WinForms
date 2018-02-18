@@ -1,9 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
+using WForms = System.Windows.Forms;
 
 namespace Xamarin.Forms.Platform.WinForms
 {
-	public class StepperRenderer : ViewRenderer<Stepper, System.Windows.Forms.NumericUpDown>
+	public class StepperRenderer : ViewRenderer<Stepper, WForms.NumericUpDown>
 	{
 		protected override void OnElementChanged(ElementChangedEventArgs<Stepper> e)
 		{
@@ -11,18 +12,30 @@ namespace Xamarin.Forms.Platform.WinForms
 			{
 				if (Control == null)
 				{
-					SetNativeControl(new System.Windows.Forms.NumericUpDown());
+					SetNativeControl(new WForms.NumericUpDown());
 				}
 
 				UpdateMinimum();
 				UpdateMaximum();
 				UpdateValue();
 				UpdateIncrement();
-
-				Control.ValueChanged += OnValueChanged;
 			}
 
 			base.OnElementChanged(e);
+		}
+
+		protected override void OnNativeElementChanged(NativeElementChangedEventArgs<WForms.NumericUpDown> e)
+		{
+			base.OnNativeElementChanged(e);
+			if (e.OldControl != null)
+			{
+				e.OldControl.ValueChanged -= OnValueChanged;
+			}
+
+			if (e.NewControl != null)
+			{
+				e.NewControl.ValueChanged += OnValueChanged;
+			}
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)

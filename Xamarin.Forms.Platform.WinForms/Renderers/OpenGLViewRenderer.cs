@@ -54,9 +54,7 @@ namespace Xamarin.Forms.Platform.WinForms
 			{
 				var glControl = new GLControl(new GraphicsMode(32, 24), 2, 0, GraphicsContextFlags.Default);
 				glControl.MakeCurrent();
-				glControl.Dock = DockStyle.Fill;
-
-				glControl.Paint += OnPaint;
+				glControl.Dock = DockStyle.None;
 
 				SetNativeControl(glControl);
 
@@ -72,6 +70,20 @@ namespace Xamarin.Forms.Platform.WinForms
 			}
 
 			base.OnElementChanged(e);
+		}
+
+		protected override void OnNativeElementChanged(NativeElementChangedEventArgs<GLControl> e)
+		{
+			base.OnNativeElementChanged(e);
+			if (e.OldControl != null)
+			{
+				e.OldControl.Paint -= OnPaint;
+			}
+
+			if (e.NewControl != null)
+			{
+				e.NewControl.Paint += OnPaint;
+			}
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)

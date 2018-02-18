@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="WinFormsTestApp.Page2">
+    <ContentPage.Content>
+        <Frame
+            OutlineColor="Red"
+            BackgroundColor="Yellow"
+            CornerRadius="8">
+            <Image Source="https://assets-cdn.github.com/images/modules/logos_page/GitHub-Logo.png" Aspect="AspectFill"/>
+            <!--<Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <ProgressBar Grid.Row="0" Progress="{Binding Source={x:Reference slider}, Path=Value}" />
+                <Slider Grid.Row="1" Value="0" Minimum="0" Maximum="1" x:Name="slider" />
+            </Grid>-->
+        </Frame>
+    </ContentPage.Content>
+</ContentPage>
